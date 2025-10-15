@@ -13,10 +13,17 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, username, password, role, profile } = req.body;
 
+    // Validate input
+    if (!name || !email || !username || !password) {
+      return res.status(400).json({ 
+        message: 'Please provide all required fields' 
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ 
       $or: [{ email }, { username }] 
-    });
+    }).maxTimeMS(20000);
     
     if (existingUser) {
       return res.status(400).json({ 
@@ -64,8 +71,21 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Registration error:', error.message);
+    
+    if (error.name === 'MongooseError' || error.message.includes('buffering timed out')) {
+      return res.status(503).json({ 
+        message: 'Database connection issue. Please try again in a moment.' 
+      });
+    }
+    
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: 'User already exists' 
+      });
+    }
+    
+    res.status(500).json({ message: 'Server error. Please try again.' });
   }
 });
 
@@ -76,8 +96,13 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).maxTimeMS(20000);
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -109,8 +134,15 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error.message);
+    
+    if (error.name === 'MongooseError' || error.message.includes('buffering timed out')) {
+      return res.status(503).json({ 
+        message: 'Database connection issue. Please try again in a moment.' 
+      });
+    }
+    
+    res.status(500).json({ message: 'Server error. Please try again.' });
   }
 });
 

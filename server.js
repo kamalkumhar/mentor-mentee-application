@@ -23,21 +23,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// MongoDB connection with proper SSL configuration
+// MongoDB connection with increased timeouts for cloud deployment
 const mongoOptions = {
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 75000,
+  family: 4
 };
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mentormentee', mongoOptions)
-  .then(() => {
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mentormentee', mongoOptions);
     console.log('Connected to MongoDB database');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-    // Don't exit process, let Render retry
-  });
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    console.log('Retrying connection in 5 seconds...');
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
 
 const db = mongoose.connection;
 db.on('error', (err) => {
