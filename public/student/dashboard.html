@@ -8,6 +8,20 @@
   <link rel="stylesheet" href="../css/mobile-optimizations.css">
   <script src="../js/notification-badge.js"></script>
   <script src="../js/mobile-menu.js" defer></script>
+  <style>
+    /* Disable all transitions and animations on stats cards */
+    .dashboard-grid,
+    .dashboard-grid * {
+      transition: none !important;
+      animation: none !important;
+    }
+    
+    .stat-card {
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+    }
+  </style>
 </head>
 <body>
   <!-- Navigation -->
