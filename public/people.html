@@ -11,6 +11,19 @@
       display: none;
     }
     
+    /* Disable all transitions and animations on stats cards */
+    .stats-bar,
+    .stats-bar * {
+      transition: none !important;
+      animation: none !important;
+    }
+    
+    .stat-card {
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+    }
+    
     /* Mobile-specific fixes for People page */
     @media (max-width: 768px) {
       main {
@@ -108,15 +121,15 @@
 
     <!-- Stats Bar -->
     <div class="stats-bar" style="display: flex !important; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #4361ee, #3730a3) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #4361ee, #3730a3) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important;">
         <h4 id="totalMentors" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
         <p style="margin: 0; opacity: 0.9; color: white !important;">Total Mentors</p>
       </div>
-      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important;">
         <h4 id="totalStudents" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
         <p style="margin: 0; opacity: 0.9; color: white !important;">Total Students</p>
       </div>
-      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important;">
         <h4 id="totalPeople" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
         <p style="margin: 0; opacity: 0.9; color: white !important;">Total Users</p>
       </div>
