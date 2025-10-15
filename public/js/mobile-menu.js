@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const navbarContainer = document.querySelector('.navbar-container');
   const navLinks = document.querySelector('.nav-links');
   
-  if (navbarContainer && navLinks && window.innerWidth <= 768) {
+  if (navbarContainer && navLinks) {
     // Check if hamburger button already exists
     let menuToggle = document.querySelector('.mobile-menu-toggle');
     

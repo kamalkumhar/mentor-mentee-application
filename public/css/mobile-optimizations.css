@@ -76,16 +76,28 @@ html, body {
   
   /* Hamburger menu button */
   .mobile-menu-toggle {
-    display: block;
+    display: block !important;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
     color: var(--dark);
     padding: 0.5rem;
     position: absolute;
     right: 1rem;
-    top: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-menu-toggle:active {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
   }
   
   .navbar-container {
@@ -95,7 +107,7 @@ html, body {
 
 @media (min-width: 769px) {
   .mobile-menu-toggle {
-    display: none;
+    display: none !important;
   }
   
   .nav-links {
