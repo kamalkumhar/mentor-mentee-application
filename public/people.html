@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People - MentorMentee</title>
+  <link rel="stylesheet" href="css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <style>
+    .mentor-only {
+      display: none;
+    }
+    
+    /* Mobile-specific fixes for People page */
+    @media (max-width: 768px) {
+      main {
+        padding: 0 0.75rem !important;
+      }
+      
+      h1 {
+        font-size: 1.75rem !important;
+        margin-bottom: 0.25rem !important;
+      }
+      
+      .stats-bar {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1.5rem !important;
+      }
+      
+      .stat-card {
+        min-width: 100% !important;
+        flex: none !important;
+        padding: 1rem !important;
+      }
+      
+      .stat-card h4 {
+        font-size: 1.5rem !important;
+      }
+      
+      .stat-card p {
+        font-size: 0.85rem !important;
+      }
+      
+      .tabs-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem !important;
+        margin: 1rem 0 !important;
+        padding-bottom: 0.5rem;
+      }
+      
+      .tab-button {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.85rem !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      
+      #mentors-grid,
+      #students-grid,
+      #all-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        margin-top: 1rem !important;
+      }
+      
+      #assign-grid > div {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem !important;
+      }
+      
+      .stat-card h4 {
+        font-size: 1.25rem !important;
+      }
+      
+      .tab-button {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+      }
+    }
+  </style>
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f5f7fb;">
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links" id="navLinks">
+        <!-- Navigation will be populated dynamically -->
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+    <div style="margin: 1.5rem 0;">
+      <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">People</h1>
+      <p style="color: #6b7280; font-size: 1rem; margin: 0;">Browse registered mentors and students</p>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" style="display: flex !important; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #4361ee, #3730a3) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <h4 id="totalMentors" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
+        <p style="margin: 0; opacity: 0.9; color: white !important;">Total Mentors</p>
+      </div>
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <h4 id="totalStudents" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
+        <p style="margin: 0; opacity: 0.9; color: white !important;">Total Students</p>
+      </div>
+      <div class="stat-card" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; color: white !important; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <h4 id="totalPeople" style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700; color: white !important;">0</h4>
+        <p style="margin: 0; opacity: 0.9; color: white !important;">Total Users</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container" id="tabsContainer" style="display: flex !important; gap: 1rem; margin: 2rem 0; border-bottom: 2px solid #e2e8f0;">
+      <button class="tab-button active" data-tab="mentors" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid #4361ee; cursor: pointer; font-size: 1rem; font-weight: 500; color: #4361ee;">Mentors</button>
+      <button class="tab-button" data-tab="students" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1rem; font-weight: 500; color: #6b7280;">Students</button>
+      <button class="tab-button" data-tab="all" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1rem; font-weight: 500; color: #6b7280;">All People</button>
+      <button class="tab-button mentor-only" data-tab="assign" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1rem; font-weight: 500; color: #6b7280; display: none;">Assign Students</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="mentors-tab" style="display: block;">
+      <div id="mentors-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div style="text-align: center; padding: 3rem; color: #6b7280;">
+          <p>Loading mentors...</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="students-tab" style="display: none;">
+      <div id="students-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div style="text-align: center; padding: 3rem; color: #6b7280;">
+          <p>Loading students...</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="assign-tab" style="display: none;">
+      <div style="background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+        <p style="margin: 0; color: #1e40af;"><strong>👥 Assign Students to Mentors:</strong> Select a student below and assign them to a mentor for guidance and chat access.</p>
+      </div>
+      <div id="assign-grid" style="margin-top: 2rem;">
+        <div style="text-align: center; padding: 3rem; color: #6b7280;">
+          <p>Loading students...</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="all-tab" style="display: none;">
+      <div id="all-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div style="text-align: center; padding: 3rem; color: #6b7280;">
+          <p>Loading all users...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let allUsers = [];
+    let mentors = [];
+    let students = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Setup navigation based on login status
+      setupNavigation();
+      
+      // Load users
+      loadUsers();
+
+      // Tab switching
+      const tabButtons = document.querySelectorAll('.tab-button');
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const tabName = this.dataset.tab;
+          switchTab(tabName);
+        });
+      });
+    });
+
+    function setupNavigation() {
+      const token = localStorage.getItem('token');
+      const userRole = localStorage.getItem('userRole');
+      const navLinks = document.getElementById('navLinks');
+      
+      if (token && userRole) {
+        // User is logged in - show dashboard navigation
+        if (userRole === 'student') {
+          navLinks.innerHTML = `
+            <li><a href="student/dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="student/meetings.html" class="nav-link">Meetings</a></li>
+            <li><a href="student/chat.html" class="nav-link">Messages</a></li>
+            <li><a href="student/notifications.html" class="nav-link">Notifications</a></li>
+            <li><a href="student/profile.html" class="nav-link">Profile</a></li>
+            <li><a href="people.html" class="nav-link active">People</a></li>
+            <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+          `;
+        } else if (userRole === 'mentor') {
+          navLinks.innerHTML = `
+            <li><a href="mentor/dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="mentor/meetings.html" class="nav-link">Meetings</a></li>
+            <li><a href="mentor/chat.html" class="nav-link">Messages</a></li>
+            <li><a href="mentor/notifications.html" class="nav-link">Notifications</a></li>
+            <li><a href="mentor/profile.html" class="nav-link">Profile</a></li>
+            <li><a href="people.html" class="nav-link active">People</a></li>
+            <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+          `;
+          
+          // Show "Assign Students" tab only for mentors
+          const assignTab = document.querySelector('.mentor-only');
+          if (assignTab) {
+            assignTab.style.display = 'block';
+          }
+        }
+        
+        // Add logout handler
+        setTimeout(() => {
+          const logoutBtn = document.getElementById('logoutBtn');
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                window.location.href = '/';
+              }
+            });
+          }
+        }, 100);
+      } else {
+        // User not logged in - show public navigation
+        navLinks.innerHTML = `
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="student/login.html" class="nav-link">Student</a></li>
+          <li><a href="mentor/login.html" class="nav-link">Mentor</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+        `;
+      }
+    }
+
+    function switchTab(tabName) {
+      // Update buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.color = '#6b7280';
+        btn.style.borderBottomColor = 'transparent';
+      });
+      const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+      activeBtn.classList.add('active');
+      activeBtn.style.color = '#4361ee';
+      activeBtn.style.borderBottomColor = '#4361ee';
+
+      // Update content - Hide all tabs first
+      document.getElementById('mentors-tab').style.display = 'none';
+      document.getElementById('students-tab').style.display = 'none';
+      document.getElementById('assign-tab').style.display = 'none';
+      document.getElementById('all-tab').style.display = 'none';
+      
+      // Show only selected tab
+      document.getElementById(`${tabName}-tab`).style.display = 'block';
+    }
+
+    async function loadUsers() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Loading users with token:', token ? 'Present' : 'Missing');
+        
+        const headers = {};
+        
+        if (token) {
+          headers['Authorization'] = 'Bearer ' + token;
+        }
+        
+        const response = await fetch('/api/users', { headers });
+        console.log('Response status:', response.status);
+        
+        if (response.ok) {
+          allUsers = await response.json();
+          console.log('Users loaded:', allUsers.length);
+          mentors = allUsers.filter(u => u.role === 'mentor');
+          students = allUsers.filter(u => u.role === 'student');
+
+          // Update stats - Stats will always be visible
+          document.getElementById('totalMentors').textContent = mentors.length;
+          document.getElementById('totalStudents').textContent = students.length;
+          document.getElementById('totalPeople').textContent = allUsers.length;
+
+          // Display users
+          displayMentors();
+          displayStudents();
+          displayAll();
+          displayAssignStudents();
+        } else {
+          console.error('Failed to load users - Status:', response.status);
+          // Keep stats at 0, show login message in grids only
+          document.getElementById('mentors-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Please login to view users</p></div>';
+          document.getElementById('students-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Please login to view users</p></div>';
+          document.getElementById('assign-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Please login to assign students</p></div>';
+          document.getElementById('all-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Please login to view users</p></div>';
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        // Keep stats at 0, show error message in grids only
+        document.getElementById('mentors-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Error loading users. Please try again.</p></div>';
+        document.getElementById('students-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Error loading users. Please try again.</p></div>';
+        document.getElementById('assign-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Error loading users. Please try again.</p></div>';
+        document.getElementById('all-grid').innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>Error loading users. Please try again.</p></div>';
+      }
+    }
+
+    function displayMentors() {
+      const grid = document.getElementById('mentors-grid');
+      
+      if (mentors.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>No mentors registered yet</p></div>';
+        return;
+      }
+
+      grid.innerHTML = mentors.map(person => createPersonCard(person)).join('');
+    }
+
+    function displayStudents() {
+      const grid = document.getElementById('students-grid');
+      
+      if (students.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>No students registered yet</p></div>';
+        return;
+      }
+
+      grid.innerHTML = students.map(person => createPersonCard(person)).join('');
+    }
+
+    function displayAll() {
+      const grid = document.getElementById('all-grid');
+      
+      if (allUsers.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>No users registered yet</p></div>';
+        return;
+      }
+
+      grid.innerHTML = allUsers.map(person => createPersonCard(person)).join('');
+    }
+
+    function displayAssignStudents() {
+      const grid = document.getElementById('assign-grid');
+      
+      if (students.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>No students registered yet</p></div>';
+        return;
+      }
+
+      if (mentors.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;"><p>No mentors available to assign</p></div>';
+        return;
+      }
+
+      let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">';
+      
+      students.forEach(student => {
+        const studentName = student.name || student.username;
+        const studentInitials = getInitials(studentName);
+        const branch = student.profile?.branch || 'N/A';
+        const currentMentor = student.mentor;
+        const currentMentorName = currentMentor ? (currentMentor.name || 'Assigned') : 'Not Assigned';
+        const isAssigned = !!currentMentor;
+        
+        html += `
+          <div style="background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-left: 4px solid ${isAssigned ? '#10b981' : '#f59e0b'};">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f0f0f0;">
+              <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; font-weight: 600; flex-shrink: 0;">${studentInitials}</div>
+              <div style="min-width: 0; flex: 1;">
+                <h4 style="margin: 0 0 0.25rem 0; font-size: 1rem; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${studentName}</h4>
+                <p style="margin: 0; color: #6b7280; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@${student.username}</p>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 0.75rem;">
+              <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #f0f0f0;">
+                <span style="color: #6b7280; font-size: 0.85rem;">Branch:</span>
+                <strong style="color: #1e293b; font-size: 0.85rem;">${branch}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.4rem 0;">
+                <span style="color: #6b7280; font-size: 0.85rem;">Current Mentor:</span>
+                <strong style="color: ${isAssigned ? '#10b981' : '#f59e0b'}; font-size: 0.85rem;">${currentMentorName}</strong>
+              </div>
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              ${isAssigned ? `
+                <div style="margin-bottom: 0.75rem;">
+                  <button onclick="toggleChangeMentor('${student._id}')" style="width: 100%; padding: 0.65rem; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; min-height: 44px;">
+                    🔄 Change Mentor
+                  </button>
+                </div>
+                <div id="change-mentor-${student._id}" style="display: none;">
+              ` : '<div>'}
+              
+              <label style="display: block; color: #6b7280; font-size: 0.85rem; margin-bottom: 0.5rem;">${isAssigned ? 'Select New Mentor:' : 'Assign to Mentor:'}</label>
+              <select id="mentor-select-${student._id}" style="width: 100%; padding: 0.65rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; margin-bottom: 0.65rem; min-height: 44px;">
+                <option value="">-- Select Mentor --</option>
+                ${mentors.map(mentor => `
+                  <option value="${mentor._id}" ${currentMentor && currentMentor._id === mentor._id ? 'selected' : ''}>
+                    ${mentor.name || mentor.username}
+                  </option>
+                `).join('')}
+              </select>
+              <button onclick="assignMentor('${student._id}')" style="width: 100%; padding: 0.65rem; background: linear-gradient(135deg, #4361ee, #3730a3); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; min-height: 44px;">
+                ${isAssigned ? '✅ Update Mentor' : '✅ Assign Mentor'}
+              </button>
+              
+              ${isAssigned ? '</div>' : '</div>'}
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      grid.innerHTML = html;
+    }
+
+    async function assignMentor(studentId) {
+      const selectElement = document.getElementById(`mentor-select-${studentId}`);
+      const mentorId = selectElement.value;
+      
+      if (!mentorId) {
+        alert('Please select a mentor');
+        return;
+      }
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/users/${studentId}/assign-mentor`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ mentorId })
+        });
+        
+        if (response.ok) {
+          alert('Mentor assigned successfully!');
+          // Reload users to show updated data
+          await loadUsers();
+        } else {
+          const error = await response.json();
+          alert('Error: ' + (error.message || 'Failed to assign mentor'));
+        }
+      } catch (error) {
+        console.error('Error assigning mentor:', error);
+        alert('Error assigning mentor. Please try again.');
+      }
+    }
+
+    function createPersonCard(person) {
+      const initials = getInitials(person.name || person.username);
+      const displayName = person.name || person.username;
+      const badgeColor = person.role === 'mentor' ? '#4361ee' : '#10b981';
+      const badgeBg = person.role === 'mentor' ? 'rgba(67, 97, 238, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+      const badgeText = person.role === 'mentor' ? 'Mentor' : 'Student';
+
+      return `
+        <div style="background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #4361ee, #3730a3); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; font-weight: 600; flex-shrink: 0;">${initials}</div>
+            <div style="min-width: 0; flex: 1;">
+              <h3 style="margin: 0 0 0.25rem 0; font-size: 1rem; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</h3>
+              <p style="margin: 0; color: #6b7280; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@${person.username}</p>
+            </div>
+          </div>
+          
+          <div style="margin: 0.75rem 0;">
+            <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; background: ${badgeBg}; color: ${badgeColor};">${badgeText}</span>
+          </div>
+          
+          <div style="margin: 0.75rem 0;">
+            ${person.email ? `
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; gap: 0.5rem;">
+                <span style="color: #6b7280; font-size: 0.85rem; flex-shrink: 0;">Email</span>
+                <span style="font-weight: 500; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;">${person.email}</span>
+              </div>
+            ` : ''}
+            
+            ${person.department ? `
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">
+                <span style="color: #6b7280; font-size: 0.85rem;">Department</span>
+                <span style="font-weight: 500; font-size: 0.85rem;">${person.department}</span>
+              </div>
+            ` : ''}
+            
+            ${person.expertise ? `
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                <span style="color: #6b7280; font-size: 0.85rem;">Expertise</span>
+                <span style="font-weight: 500; font-size: 0.85rem;">${person.expertise}</span>
+              </div>
+            ` : ''}
+            
+            ${person.year ? `
+              <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                <span style="color: #6b7280; font-size: 0.85rem;">Year</span>
+                <span style="font-weight: 500; font-size: 0.85rem;">${person.year}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleChangeMentor(studentId) {
+      const changeMentorDiv = document.getElementById(`change-mentor-${studentId}`);
+      if (changeMentorDiv) {
+        if (changeMentorDiv.style.display === 'none') {
+          changeMentorDiv.style.display = 'block';
+        } else {
+          changeMentorDiv.style.display = 'none';
+        }
+      }
+    }
+
+    function getInitials(name) {
+      if (!name) return '?';
+      const parts = name.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+  </script>
+</body>
+</html>

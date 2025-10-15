@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Mentees - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>My Mentees</h1>
+        <p>Manage your mentoring relationships</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="menteeCount">0</div>
+        <div class="stat-label">Total Mentees</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="activeCount">0</div>
+        <div class="stat-label">Active Mentees</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="avgCGPA">0.00</div>
+        <div class="stat-label">Average CGPA</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Registered Students</h3>
+      
+      <div id="menteesContainer" style="margin-top: 1rem;">
+        <div style="text-align: center; padding: 2rem; color: var(--gray);">
+          Loading students...
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      let currentMentorId = null;
+
+      // Get current mentor ID
+      fetch('/api/auth/me', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(mentor => {
+        currentMentorId = mentor._id;
+        loadStudents();
+      })
+      .catch(error => {
+        console.error('Error fetching mentor data:', error);
+      });
+      
+      // Load all registered students
+      function loadStudents() {
+        fetch('/api/users', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(users => {
+          const students = users.filter(u => u.role === 'student');
+          displayStudents(students);
+          updateStats(students);
+        })
+        .catch(error => {
+          console.error('Error loading students:', error);
+          document.getElementById('menteesContainer').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: var(--danger);">Error loading students</div>';
+        });
+      }
+
+      function displayStudents(students) {
+        const container = document.getElementById('menteesContainer');
+
+        if (students.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--gray);">
+              <p style="font-size: 2rem; margin-bottom: 0.5rem;">📭</p>
+              <p>No students registered yet</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = students.map(student => {
+          const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+          const colors = ['#4361ee', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          
+          // Calculate CGPA
+          let cgpa = 0;
+          let cgpaStatus = 'Not Available';
+          let cgpaColor = 'var(--gray)';
+          
+          if (student.profile && student.profile.cgpa) {
+            const cgpaData = student.profile.cgpa;
+            const currentYear = student.profile.currentYear || 1;
+            let total = 0;
+            let count = 0;
+            
+            for (let year = 1; year <= currentYear; year++) {
+              const yearKey = `year${year}`;
+              const yearCGPA = cgpaData[yearKey];
+              
+              if (yearCGPA) {
+                if (yearCGPA.sem1 !== undefined && yearCGPA.sem1 !== null) {
+                  total += yearCGPA.sem1;
+                  count++;
+                }
+                if (yearCGPA.sem2 !== undefined && yearCGPA.sem2 !== null) {
+                  total += yearCGPA.sem2;
+                  count++;
+                }
+              }
+            }
+            
+            if (count > 0) {
+              cgpa = (total / count).toFixed(2);
+              if (cgpa >= 8.5) {
+                cgpaStatus = 'Excellent';
+                cgpaColor = '#10b981';
+              } else if (cgpa >= 6.0) {
+                cgpaStatus = 'Good';
+                cgpaColor = '#4361ee';
+              } else {
+                cgpaStatus = 'Average';
+                cgpaColor = '#f59e0b';
+              }
+            }
+          }
+
+          const branch = student.profile?.branch || 'Not specified';
+          const year = student.profile?.currentYear || 'N/A';
+          
+          return `
+            <div style="display: flex; align-items: center; padding: 1rem 0; border-bottom: 1px solid #e2e8f0;">
+              <div style="width: 50px; height: 50px; background: ${color}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; margin-right: 1rem; font-weight: bold;">
+                ${initials}
+              </div>
+              <div style="flex: 1;">
+                <p style="margin: 0; font-weight: 600;">${student.name}</p>
+                <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">${branch}, Year ${year}</p>
+              </div>
+              <div style="margin: 0 1rem; text-align: center;">
+                <p style="margin: 0; font-weight: 600;">CGPA: ${cgpa}</p>
+                <p style="margin: 0; color: ${cgpaColor}; font-size: 0.9rem;">${cgpaStatus}</p>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <a href="chat.html?userId=${student._id}" class="btn btn-primary btn-sm">Message</a>
+                <button onclick="viewProgress('${student._id}')" class="btn btn-secondary btn-sm">View Progress</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function updateStats(students) {
+        document.getElementById('menteeCount').textContent = students.length;
+        document.getElementById('activeCount').textContent = students.length;
+        
+        // Calculate average CGPA
+        let totalCGPA = 0;
+        let cgpaCount = 0;
+        
+        students.forEach(student => {
+          if (student.profile && student.profile.cgpa) {
+            const cgpaData = student.profile.cgpa;
+            const currentYear = student.profile.currentYear || 1;
+            let total = 0;
+            let count = 0;
+            
+            for (let year = 1; year <= currentYear; year++) {
+              const yearKey = `year${year}`;
+              const yearCGPA = cgpaData[yearKey];
+              
+              if (yearCGPA) {
+                if (yearCGPA.sem1) {
+                  total += yearCGPA.sem1;
+                  count++;
+                }
+                if (yearCGPA.sem2) {
+                  total += yearCGPA.sem2;
+                  count++;
+                }
+              }
+            }
+            
+            if (count > 0) {
+              totalCGPA += (total / count);
+              cgpaCount++;
+            }
+          }
+        });
+        
+        const avgCGPA = cgpaCount > 0 ? (totalCGPA / cgpaCount).toFixed(2) : '0.00';
+        document.getElementById('avgCGPA').textContent = avgCGPA;
+      }
+
+      // Global function for View Progress button
+      window.viewProgress = function(studentId) {
+        // Redirect to student progress report page
+        window.location.href = `../student/progress-report.html?studentId=${studentId}`;
+      };
+    });
+    
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>

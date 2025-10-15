@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mentor Dashboard - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="../css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="../js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>Mentor Dashboard</h1>
+        <p>Welcome back, <span id="mentorName">Mentor</span></p>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="meetingsCount">0</div>
+        <div class="stat-label">Upcoming Meetings</div>
+        <div style="margin-top: 1rem;">
+          <p id="nextMeeting"></p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="messagesCount">0</div>
+        <div class="stat-label">Unread Messages</div>
+        <div style="margin-top: 1rem;">
+          <p id="lastMessage"></p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="resourcesCount">0</div>
+        <div class="stat-label">Shared Resources</div>
+        <div style="margin-top: 1rem;">
+          <p id="resourcesInfo">Loading...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Quick Actions</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <button class="btn btn-primary" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <span style="font-size: 2rem; margin-bottom: 0.5rem;">📅</span>
+          <span>Schedule Meeting</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <span style="font-size: 2rem; margin-bottom: 0.5rem;">💬</span>
+          <span>Send Message</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <span style="font-size: 2rem; margin-bottom: 0.5rem;">📚</span>
+          <span>Share Resource</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <span style="font-size: 2rem; margin-bottom: 0.5rem;">📊</span>
+          <span>View Reports</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Your Mentees -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Your Mentees</h3>
+        <a href="mentees.html" class="btn btn-secondary btn-sm">View All</a>
+      </div>
+      
+      <div id="menteesContainer" style="margin-top: 1rem;">
+        <div style="text-align: center; padding: 2rem; color: var(--gray);">
+          Loading mentees...
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Animate stats cards
+    document.addEventListener('DOMContentLoaded', function() {
+      const statCards = document.querySelectorAll('.stat-card');
+      statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 200 * index);
+      });
+      
+      // Logout functionality
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          // In a real app, this would destroy the session/token
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          window.location.href = '/';
+        }
+      });
+      
+      // Quick Actions click handlers
+      const quickActionBtns = document.querySelectorAll('.card .btn');
+      quickActionBtns[0].addEventListener('click', () => {
+        window.location.href = 'meetings.html';
+      });
+      quickActionBtns[1].addEventListener('click', () => {
+        window.location.href = 'chat.html';
+      });
+      quickActionBtns[2].addEventListener('click', () => {
+        window.location.href = 'resources.html';
+      });
+      quickActionBtns[3].addEventListener('click', () => {
+        window.location.href = 'mentees.html';
+      });
+      
+      // Fetch mentor data from API
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Fetch mentor profile
+        fetch('/api/auth/me', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.name) {
+            document.getElementById('mentorName').textContent = data.name;
+          }
+          // Load meetings after getting user info
+          loadUpcomingMeetings(token);
+          // Load unread messages count
+          loadUnreadMessages(token);
+          // Load assigned mentees
+          loadAssignedMentees(token, data._id);
+          // Load resources count
+          loadResourcesCount(token);
+        })
+        .catch(error => {
+          console.error('Error fetching mentor data:', error);
+        });
+      }
+      
+      // Load unread messages count
+      function loadUnreadMessages(token) {
+        fetch('/api/messages/unread-count', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('messagesCount').textContent = data.count;
+          if (data.count > 0) {
+            document.getElementById('lastMessage').innerHTML = `You have <strong>${data.count} unread message${data.count > 1 ? 's' : ''}</strong>`;
+          } else {
+            document.getElementById('lastMessage').innerHTML = 'No unread messages';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading unread messages:', error);
+          document.getElementById('lastMessage').innerHTML = 'Error loading messages';
+        });
+      }
+      
+      // Load resources count
+      function loadResourcesCount(token) {
+        fetch('/api/resources', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(resources => {
+          // Update resources count
+          document.getElementById('resourcesCount').textContent = resources.length;
+          
+          // Update resources info
+          if (resources.length > 0) {
+            document.getElementById('resourcesInfo').innerHTML = `Total uploaded: <strong>${resources.length} file${resources.length > 1 ? 's' : ''}</strong>`;
+          } else {
+            document.getElementById('resourcesInfo').innerHTML = 'No resources uploaded yet';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading resources:', error);
+          document.getElementById('resourcesInfo').innerHTML = 'Error loading resources';
+        });
+      }
+      
+      // Load upcoming meetings
+      function loadUpcomingMeetings(token) {
+        fetch('/api/meetings/upcoming', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(meetings => {
+          // Update meetings count
+          document.getElementById('meetingsCount').textContent = meetings.length;
+          
+          // Update next meeting
+          if (meetings.length > 0) {
+            const nextMeeting = meetings[0];
+            const meetingDate = new Date(nextMeeting.date);
+            const timeStr = formatDateTime(meetingDate);
+            document.getElementById('nextMeeting').innerHTML = `Next meeting: <strong>${timeStr}</strong>`;
+          } else {
+            document.getElementById('nextMeeting').innerHTML = 'No upcoming meetings';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading meetings:', error);
+          document.getElementById('nextMeeting').innerHTML = 'Error loading meetings';
+        });
+      }
+      
+      // Format date time
+      function formatDateTime(date) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const meetingDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        
+        if (meetingDay.getTime() === today.getTime()) {
+          return `Today, ${timeStr}`;
+        } else if (meetingDay.getTime() === tomorrow.getTime()) {
+          return `Tomorrow, ${timeStr}`;
+        } else {
+          return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + timeStr;
+        }
+      }
+      
+      // Load assigned mentees
+      function loadAssignedMentees(token, mentorId) {
+        fetch('/api/users', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(users => {
+          // Filter students assigned to this mentor
+          const assignedStudents = users.filter(u => 
+            u.role === 'student' && u.mentor && u.mentor._id === mentorId
+          );
+          
+          displayMentees(assignedStudents);
+        })
+        .catch(error => {
+          console.error('Error loading mentees:', error);
+          document.getElementById('menteesContainer').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: var(--danger);">Error loading mentees</div>';
+        });
+      }
+      
+      function displayMentees(students) {
+        const container = document.getElementById('menteesContainer');
+        
+        if (students.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--gray);">
+              <p style="font-size: 2rem; margin-bottom: 0.5rem;">📭</p>
+              <p>No students assigned yet</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Display first 3 students
+        const displayStudents = students.slice(0, 3);
+        
+        container.innerHTML = displayStudents.map((student, index) => {
+          const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+          const colors = ['#4361ee', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+          const color = colors[index % colors.length];
+          
+          // Calculate CGPA
+          let cgpa = 0;
+          let cgpaStatus = 'Not Available';
+          let cgpaColor = 'var(--gray)';
+          
+          if (student.profile && student.profile.cgpa) {
+            const cgpaData = student.profile.cgpa;
+            const currentYear = student.profile.currentYear || 1;
+            let total = 0;
+            let count = 0;
+            
+            for (let year = 1; year <= currentYear; year++) {
+              const yearKey = `year${year}`;
+              const yearCGPA = cgpaData[yearKey];
+              
+              if (yearCGPA) {
+                if (yearCGPA.sem1 !== undefined && yearCGPA.sem1 !== null) {
+                  total += yearCGPA.sem1;
+                  count++;
+                }
+                if (yearCGPA.sem2 !== undefined && yearCGPA.sem2 !== null) {
+                  total += yearCGPA.sem2;
+                  count++;
+                }
+              }
+            }
+            
+            if (count > 0) {
+              cgpa = (total / count).toFixed(2);
+              if (cgpa >= 8.5) {
+                cgpaStatus = 'Excellent';
+                cgpaColor = '#10b981';
+              } else if (cgpa >= 6.0) {
+                cgpaStatus = 'Good';
+                cgpaColor = '#4361ee';
+              } else {
+                cgpaStatus = 'Average';
+                cgpaColor = '#f59e0b';
+              }
+            }
+          }
+          
+          const branch = student.profile?.branch || 'Not specified';
+          const year = student.profile?.currentYear || 'N/A';
+          const borderBottom = index < displayStudents.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : '';
+          
+          return `
+            <div style="display: flex; align-items: center; padding: 1rem 0; ${borderBottom}">
+              <div style="width: 40px; height: 40px; background: ${color}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; margin-right: 1rem; font-weight: bold;">
+                ${initials}
+              </div>
+              <div style="flex: 1;">
+                <p style="margin: 0; font-weight: 600;">${student.name}</p>
+                <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">${branch}, Year ${year}</p>
+              </div>
+              <div style="margin: 0 1rem; text-align: center;">
+                <p style="margin: 0; font-weight: 600;">CGPA: ${cgpa}</p>
+                <p style="margin: 0; color: ${cgpaColor}; font-size: 0.9rem;">${cgpaStatus}</p>
+              </div>
+              <div>
+                <a href="chat.html?userId=${student._id}" class="btn btn-primary btn-sm">Message</a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    });
+  </script>
+</body>
+</html>

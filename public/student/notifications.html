@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+            <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li><a href="#" class="nav-link">Notifications</a></li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>Notifications</h1>
+        <p>Your recent activity and updates</p>
+      </div>
+      <button id="markAllReadBtn" class="btn btn-secondary">Mark All as Read</button>
+    </div>
+
+    <div class="card" id="notificationsContainer">
+      <div style="text-align: center; padding: 2rem; color: var(--gray);">
+        <p>Loading notifications...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let notificationInterval;
+    
+    function getNotificationIcon(title) {
+      if (title.includes('💬') || title.includes('message')) return '💬';
+      if (title.includes('📢') || title.includes('Broadcast')) return '📢';
+      if (title.includes('📅') || title.includes('Meeting')) return '📅';
+      if (title.includes('📚') || title.includes('Assignment')) return '�';
+      if (title.includes('👤') || title.includes('mentee')) return '👤';
+      if (title.includes('✏️') || title.includes('Profile')) return '✏️';
+      if (title.includes('📊') || title.includes('Progress')) return '📊';
+      if (title.includes('🎉') || title.includes('Congratulations')) return '🎉';
+      return '🔔';
+    }
+
+    function getNotificationColor(type) {
+      const colors = {
+        'info': 'var(--primary)',
+        'success': 'var(--success)',
+        'warning': 'var(--warning)',
+        'error': 'var(--error)'
+      };
+      return colors[type] || 'var(--accent)';
+    }
+
+    function getTimeAgo(date) {
+      const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+      
+      if (seconds < 60) return 'Just now';
+      if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+      if (seconds < 86400) return Math.floor(seconds / 3600) + ' hour' + (Math.floor(seconds / 3600) > 1 ? 's' : '') + ' ago';
+      if (seconds < 604800) return Math.floor(seconds / 86400) + ' day' + (Math.floor(seconds / 86400) > 1 ? 's' : '') + ' ago';
+      return new Date(date).toLocaleDateString();
+    }
+
+    function displayNotifications(notifications) {
+      const container = document.getElementById('notificationsContainer');
+      
+      if (notifications.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: var(--gray);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔔</div>
+            <p style="font-size: 1.1rem; margin: 0;">No notifications yet</p>
+            <p style="margin-top: 0.5rem;">You'll see updates here when you have new activity</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = notifications.map((notif, index) => `
+        <div style="display: flex; align-items: center; padding: 1rem 0; ${index < notifications.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : ''} ${!notif.read ? 'background: rgba(99, 102, 241, 0.05);' : ''}">
+          <div style="width: 40px; height: 40px; background: ${getNotificationColor(notif.type)}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; margin-right: 1rem; font-size: 1.2rem;">
+            ${getNotificationIcon(notif.title)}
+          </div>
+          <div style="flex: 1;">
+            <p style="margin: 0; font-weight: ${!notif.read ? '700' : '600'};">${notif.title}</p>
+            <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">${notif.message}</p>
+          </div>
+          <div style="text-align: right; margin-left: 1rem;">
+            <p style="margin: 0; font-size: 0.9rem; color: var(--gray);">${getTimeAgo(notif.createdAt)}</p>
+            ${!notif.read ? `<button class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;" onclick="markAsRead('${notif._id}')">Mark as Read</button>` : '<span style="color: var(--success); font-size: 0.8rem;">✓ Read</span>'}
+          </div>
+        </div>
+      `).join('');
+
+      // Update notification badge
+      const unreadCount = notifications.filter(n => !n.read).length;
+      const badge = document.querySelector('.notification-badge');
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    }
+
+    function loadNotifications() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      fetch('/api/notifications', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(notifications => {
+        displayNotifications(notifications);
+      })
+      .catch(error => {
+        console.error('Error loading notifications:', error);
+        document.getElementById('notificationsContainer').innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--error);">
+            <p>Error loading notifications. Please refresh the page.</p>
+          </div>
+        `;
+      });
+    }
+
+    function markAsRead(notificationId) {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      fetch(`/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(() => {
+        loadNotifications(); // Reload notifications
+      })
+      .catch(error => {
+        console.error('Error marking notification as read:', error);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNotifications();
+      
+      // Auto-refresh notifications every 10 seconds
+      notificationInterval = setInterval(loadNotifications, 10000);
+      
+      // Connect to Socket.io for real-time notifications
+      const socket = io();
+      
+      // Get user ID and join personal room
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetch('/api/auth/me', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(response => response.json())
+        .then(user => {
+          socket.emit('join_user_room', user._id);
+          
+          // Listen for new notifications
+          socket.on('new_notification', (notification) => {
+            console.log('New notification received:', notification);
+            loadNotifications(); // Reload to show new notification
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching user:', error);
+        });
+      }
+    });
+    
+    document.getElementById('markAllReadBtn').addEventListener('click', function() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      if (confirm('Mark all notifications as read?')) {
+        fetch('/api/notifications/read-all', {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          loadNotifications(); // Reload notifications
+        })
+        .catch(error => {
+          console.error('Error marking notifications as read:', error);
+          alert('Error marking notifications as read. Please try again.');
+        });
+      }
+    });
+    
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        clearInterval(notificationInterval); // Stop auto-refresh
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>

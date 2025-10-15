@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="#" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>My Profile</h1>
+        <p>Manage your account settings and preferences</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+      <!-- Profile Card -->
+      <div class="card" style="flex: 1; min-width: 300px;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div id="profileAvatar" style="width: 120px; height: 120px; border-radius: 50%; background: var(--primary); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+            AJ
+          </div>
+          <h2 id="profileName">Alex Johnson</h2>
+          <p id="profileRole" style="color: var(--gray);">Computer Science Student</p>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem;">Bio</h3>
+          <p id="profileBio">Passionate computer science student with a focus on web development and artificial intelligence. Currently in my third year, seeking mentorship to advance my career goals.</p>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem;">Skills</h3>
+          <div id="profileSkills" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+            <span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">JavaScript</span>
+            <span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">Python</span>
+            <span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">React</span>
+            <span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">Node.js</span>
+            <span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">MongoDB</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 0.5rem;">Mentor</h3>
+          <div id="profileMentor" style="display: flex; align-items: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius); margin-top: 0.5rem;">
+            <div style="padding: 1rem; text-align: center; color: var(--gray);">
+              <p style="margin: 0;">Loading mentor information...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Profile Form -->
+      <div class="card" style="flex: 2; min-width: 300px;">
+        <h2>Edit Profile</h2>
+        
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" id="name" class="form-control" value="Alex Johnson">
+          </div>
+          
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" value="alex.johnson@example.com">
+          </div>
+          
+          <div class="form-group">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea id="bio" class="form-control" rows="4">Passionate computer science student with a focus on web development and artificial intelligence. Currently in my third year, seeking mentorship to advance my career goals.</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="skills" class="form-label">Skills</label>
+            <input type="text" id="skills" class="form-control" value="JavaScript, Python, React, Node.js, MongoDB">
+          </div>
+          
+          <div class="form-group">
+            <label for="education" class="form-label">Education</label>
+            <input type="text" id="education" class="form-control" value="BSc Computer Science, University of Technology">
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Function to update profile display
+    function updateProfileDisplay(user) {
+      // Update name
+      if (user.name) {
+        document.getElementById('profileName').textContent = user.name;
+        // Update avatar initials
+        const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        document.getElementById('profileAvatar').textContent = initials;
+      }
+      
+      // Update bio
+      if (user.profile && user.profile.bio) {
+        document.getElementById('profileBio').textContent = user.profile.bio;
+      }
+      
+      // Update skills
+      if (user.profile && user.profile.skills && user.profile.skills.length > 0) {
+        const skillsHtml = user.profile.skills.map(skill => 
+          `<span style="background: rgba(67, 97, 238, 0.1); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.9rem;">${skill}</span>`
+        ).join('');
+        document.getElementById('profileSkills').innerHTML = skillsHtml;
+      }
+      
+      // Update mentor information
+      if (user.mentor) {
+        const mentorName = user.mentor.name || user.mentor.username || 'Unknown Mentor';
+        const mentorTitle = user.mentor.profile?.title || 'Mentor';
+        const mentorInitials = mentorName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        
+        document.getElementById('profileMentor').innerHTML = `
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); margin-right: 1rem; display: flex; align-items: center; justify-content: center; color: white;">
+            ${mentorInitials}
+          </div>
+          <div>
+            <p style="margin: 0; font-weight: 600;">${mentorName}</p>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--gray);">${mentorTitle}</p>
+          </div>
+        `;
+      } else {
+        document.getElementById('profileMentor').innerHTML = `
+          <div style="padding: 1rem; text-align: center; color: var(--gray);">
+            <p style="margin: 0;">No mentor assigned yet</p>
+          </div>
+        `;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user profile from API
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      fetch('/api/auth/me', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(user => {
+        // Update profile display
+        updateProfileDisplay(user);
+        
+        // Update form fields
+        if (user.name) {
+          document.getElementById('name').value = user.name;
+        }
+        if (user.email) {
+          document.getElementById('email').value = user.email;
+        }
+        if (user.profile) {
+          if (user.profile.bio) {
+            document.getElementById('bio').value = user.profile.bio;
+          }
+          if (user.profile.skills && user.profile.skills.length > 0) {
+            document.getElementById('skills').value = user.profile.skills.join(', ');
+          }
+          if (user.profile.education && user.profile.education.length > 0) {
+            const eduText = user.profile.education.map(e => e.institution || e).join(', ');
+            document.getElementById('education').value = eduText;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading profile:', error);
+      });
+    });
+    
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login first');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Show loading spinner
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto;"></div>';
+      submitBtn.disabled = true;
+      
+      // Get form values
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const bio = document.getElementById('bio').value;
+      const skills = document.getElementById('skills').value;
+      const education = document.getElementById('education').value;
+      
+      // Update profile via API
+      fetch('/api/users/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          bio,
+          skills: skills.split(',').map(s => s.trim()),
+          education
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        if (data._id) {
+          // Update profile display with new data
+          updateProfileDisplay(data);
+          
+          alert('Profile updated successfully!');
+        } else {
+          alert(data.message || 'Failed to update profile');
+        }
+      })
+      .catch(error => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        console.error('Error:', error);
+        alert('Error updating profile. Please try again.');
+      });
+    });
+    
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>

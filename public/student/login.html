@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/student/login.html" class="nav-link">Student</a></li>
+        <li><a href="/mentor/login.html" class="nav-link">Mentor</a></li>
+        <li><a href="/#about" class="nav-link">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="card" style="max-width: 450px; margin: 3rem auto;">
+      <h2 style="text-align: center;">Student Login</h2>
+      <p style="text-align: center; color: var(--gray);">Access your mentorship dashboard</p>
+      
+      <form id="loginForm" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6">
+        </div>
+        
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <input type="checkbox" id="remember">
+            <label for="remember" style="display: inline; margin-left: 0.5rem;">Remember me</label>
+          </div>
+          <a href="/forgot-password.html" style="color: var(--primary);">Forgot password?</a>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+          Sign In
+        </button>
+      </form>
+      
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p>Don't have an account? <a href="register.html" style="color: var(--primary);">Register now</a></p>
+        <p style="margin-top: 1rem;">
+          <a href="/mentor/login.html" style="color: var(--primary);">Are you a mentor? Sign in here</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      // Show loading spinner
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto;"></div>';
+      submitBtn.disabled = true;
+      
+      // Make API call to login
+      fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, role: 'student' })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        if (data.token) {
+          // Store token in localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userRole', 'student');
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Show error message
+          alert(data.message || 'Login failed!');
+        }
+      })
+      .catch(error => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        console.error('Error:', error);
+        alert('An error occurred during login. Please try again.');
+      });
+    });
+  </script>
+</body>
+</html>

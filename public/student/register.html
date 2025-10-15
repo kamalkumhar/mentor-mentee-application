@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/student/login.html" class="nav-link">Student</a></li>
+        <li><a href="/mentor/login.html" class="nav-link">Mentor</a></li>
+        <li><a href="/#about" class="nav-link">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="card" style="max-width: 600px; margin: 3rem auto;">
+      <h2 style="text-align: center;">Student Registration</h2>
+      <p style="text-align: center; color: var(--gray);">Create your account to start learning</p>
+      
+      <form id="registerForm" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="branch" class="form-label">Branch</label>
+          <select id="branch" class="form-control" required>
+            <option value="">Select your branch</option>
+            <option value="Computer">Computer</option>
+            <option value="IT">IT</option>
+            <option value="EXTC">EXTC</option>
+            <option value="Chemical">Chemical</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Civil">Civil</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="division" class="form-label">Division</label>
+          <input type="text" id="division" class="form-control" placeholder="Enter your division (e.g., A, B, C)" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="currentYear" class="form-label">Current Year</label>
+          <select id="currentYear" class="form-control" required>
+            <option value="">Select your current year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+        </div>
+        
+        <!-- CGPA Fields (shown based on year selection) -->
+        <div id="cgpaFields" style="display: none; margin-top: 1rem;">
+          <h3 style="margin-bottom: 1rem;">Enter Your CGPA</h3>
+          
+          <!-- Year 1 CGPA -->
+          <div id="year1Fields" style="display: none; margin-top: 1rem;">
+            <h4>1st Year</h4>
+            <div class="form-group">
+              <label for="year1Sem1" class="form-label">Semester 1 CGPA</label>
+              <input type="number" id="year1Sem1" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="year1Sem2" class="form-label">Semester 2 CGPA</label>
+              <input type="number" id="year1Sem2" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+          </div>
+          
+          <!-- Year 2 CGPA -->
+          <div id="year2Fields" style="display: none; margin-top: 1rem;">
+            <h4>2nd Year</h4>
+            <div class="form-group">
+              <label for="year2Sem1" class="form-label">Semester 3 CGPA</label>
+              <input type="number" id="year2Sem1" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="year2Sem2" class="form-label">Semester 4 CGPA</label>
+              <input type="number" id="year2Sem2" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+          </div>
+          
+          <!-- Year 3 CGPA -->
+          <div id="year3Fields" style="display: none; margin-top: 1rem;">
+            <h4>3rd Year</h4>
+            <div class="form-group">
+              <label for="year3Sem1" class="form-label">Semester 5 CGPA</label>
+              <input type="number" id="year3Sem1" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="year3Sem2" class="form-label">Semester 6 CGPA</label>
+              <input type="number" id="year3Sem2" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+          </div>
+          
+          <!-- Year 4 CGPA -->
+          <div id="year4Fields" style="display: none; margin-top: 1rem;">
+            <h4>4th Year</h4>
+            <div class="form-group">
+              <label for="year4Sem1" class="form-label">Semester 7 CGPA</label>
+              <input type="number" id="year4Sem1" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="year4Sem2" class="form-label">Semester 8 CGPA</label>
+              <input type="number" id="year4Sem2" class="form-control" placeholder="Enter CGPA (0-10)" min="0" max="10" step="0.01">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Create a password" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <div style="display: flex; align-items: flex-start;">
+            <input type="checkbox" id="terms" required style="margin-top: 0.5rem; margin-right: 0.5rem;">
+            <label for="terms" style="display: inline;">I agree to the <a href="/terms" style="color: var(--primary);">Terms of Service</a> and <a href="/privacy" style="color: var(--primary);">Privacy Policy</a></label>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+          Create Account
+        </button>
+      </form>
+      
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p>Already have an account? <a href="login.html" style="color: var(--primary);">Sign in</a></p>
+        <p style="margin-top: 1rem;">
+          <a href="/mentor/register.html" style="color: var(--primary);">Are you a mentor? Register here</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Show CGPA fields based on selected year
+    document.getElementById('currentYear').addEventListener('change', function() {
+      const year = parseInt(this.value);
+      const cgpaFields = document.getElementById('cgpaFields');
+      
+      if (year > 0) {
+        cgpaFields.style.display = 'block';
+        
+        // Hide all year fields first
+        for (let i = 1; i <= 4; i++) {
+          document.getElementById(`year${i}Fields`).style.display = 'none';
+        }
+        
+        // Show fields up to selected year
+        for (let i = 1; i <= year; i++) {
+          document.getElementById(`year${i}Fields`).style.display = 'block';
+        }
+      } else {
+        cgpaFields.style.display = 'none';
+      }
+    });
+    
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const username = document.getElementById('username').value;
+      const branch = document.getElementById('branch').value;
+      const division = document.getElementById('division').value;
+      const currentYear = parseInt(document.getElementById('currentYear').value);
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      
+      // Validate branch selection
+      if (!branch) {
+        alert('Please select your branch!');
+        return;
+      }
+      
+      // Validate division
+      if (!division) {
+        alert('Please enter your division!');
+        return;
+      }
+      
+      // Validate year selection
+      if (!currentYear) {
+        alert('Please select your current year!');
+        return;
+      }
+      
+      // Validate CGPA entries for selected years
+      let cgpaData = {};
+      let valid = true;
+      
+      for (let year = 1; year <= currentYear; year++) {
+        const sem1 = document.getElementById(`year${year}Sem1`).value;
+        const sem2 = document.getElementById(`year${year}Sem2`).value;
+        
+        // Both semesters are required for completed years
+        if (year < currentYear) {
+          if (!sem1 || !sem2) {
+            alert(`Please enter CGPA for both semesters of year ${year}!`);
+            valid = false;
+            break;
+          }
+        }
+        
+        // For current year, at least one semester is required
+        if (year === currentYear) {
+          if (!sem1 && !sem2) {
+            alert(`Please enter CGPA for at least one semester of year ${year}!`);
+            valid = false;
+            break;
+          }
+        }
+        
+        // Validate CGPA values
+        if (sem1 && (sem1 < 0 || sem1 > 10)) {
+          alert(`Semester ${year * 2 - 1} CGPA must be between 0 and 10!`);
+          valid = false;
+          break;
+        }
+        
+        if (sem2 && (sem2 < 0 || sem2 > 10)) {
+          alert(`Semester ${year * 2} CGPA must be between 0 and 10!`);
+          valid = false;
+          break;
+        }
+        
+        cgpaData[`year${year}`] = {
+          sem1: sem1 ? parseFloat(sem1) : null,
+          sem2: sem2 ? parseFloat(sem2) : null
+        };
+      }
+      
+      if (!valid) {
+        return;
+      }
+      
+      // Show loading spinner
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto;"></div>';
+      submitBtn.disabled = true;
+      
+      // Prepare registration data
+      const registrationData = {
+        name,
+        email,
+        username,
+        password,
+        role: 'student',
+        profile: {
+          branch,
+          division,
+          currentYear,
+          cgpa: cgpaData
+        }
+      };
+      
+      // Make API call to register
+      fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registrationData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        if (data.token) {
+          // Store token in localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userRole', 'student');
+          
+          // Show success message
+          alert('Account created successfully! Welcome to MentorMentee.');
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Show error message
+          alert(data.message || 'Registration failed!');
+        }
+      })
+      .catch(error => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        console.error('Error:', error);
+        alert('An error occurred during registration. Please try again.');
+      });
+    });
+  </script>
+</body>
+</html>

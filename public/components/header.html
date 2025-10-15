@@ -1,0 +1,43 @@
+<!-- Unified Header Component -->
+<header style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem 0; margin-bottom: 2rem;">
+  <div class="container" style="text-align: center;">
+    <h1 id="pageTitle">Dashboard</h1>
+    <p id="pageSubtitle">Welcome to your MentorMentee platform</p>
+  </div>
+</header>
+
+<script>
+  // Update page title and subtitle dynamically
+  document.addEventListener('DOMContentLoaded', function() {
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSubtitle = document.getElementById('pageSubtitle');
+    
+    if (pageTitle && pageSubtitle) {
+      // Get page title from the current page name
+      const page = window.location.pathname.split('/').pop().replace('.html', '');
+      const capitalizedPage = page.charAt(0).toUpperCase() + page.slice(1);
+      
+      switch(page) {
+        case 'dashboard':
+          pageTitle.textContent = 'Dashboard';
+          pageSubtitle.textContent = 'Your overview and quick access to important features';
+          break;
+        case 'meetings':
+          pageTitle.textContent = 'Meetings';
+          pageSubtitle.textContent = 'Schedule and manage your mentoring sessions';
+          break;
+        case 'chat':
+          pageTitle.textContent = 'Messages';
+          pageSubtitle.textContent = 'Communicate with your mentors and mentees';
+          break;
+        case 'profile':
+          pageTitle.textContent = 'Profile';
+          pageSubtitle.textContent = 'Manage your account settings and preferences';
+          break;
+        default:
+          pageTitle.textContent = capitalizedPage;
+          pageSubtitle.textContent = 'Your MentorMentee platform';
+      }
+    }
+  });
+</script>
