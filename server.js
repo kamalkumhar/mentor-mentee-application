@@ -1,10 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 
 // Initialize Express app
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || "*",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -27,9 +37,11 @@ db.once('open', () => {
 
 // Set Socket.io instance for notifications
 const notificationHelper = require('./utils/notificationHelper');
+notificationHelper.setIO(io);
+
 // Routes
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.json({ message: 'Welcome to the Mentor-Mentee Platform API' });
 });
 
 // API Routes
@@ -41,12 +53,46 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/database', require('./routes/database'));
 app.use('/api/resources', require('./routes/resources'));
 
-// Export for Vercel serverless
-module.exports = app;
-
-// Start server (only for local development)
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+  
+  // Join a room based on user ID
+  socket.on('join_user_room', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} joined their personal room`);
   });
-}
+  
+  // Join a room
+  socket.on('join_room', (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room ${room}`);
+  });
+  
+  // Handle sending messages
+  socket.on('send_message', (data) => {
+    console.log('Message received:', data);
+    // Broadcast message to the room
+    socket.to(data.room).emit('receive_message', data);
+  });
+  
+  // Handle typing indicator
+  socket.on('typing', (data) => {
+    socket.to(data.room).emit('user_typing', data);
+  });
+  
+  // Handle disconnect
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// Make io accessible to routes
+app.set('io', io);
+
+// Start server
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+module.exports = app;

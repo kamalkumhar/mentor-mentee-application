@@ -97,39 +97,66 @@ Fully responsive design for mobile devices
 - Touch-friendly interface
 - Optimized layouts for screens 480px, 768px, and 1024px+
 
-## Deploy to Vercel
+## Deploy to Render.com (Recommended - Full Features)
 
-### Step 1: Setup MongoDB Atlas (Free Database)
+### Why Render?
+- ✅ Free tier available
+- ✅ Full Socket.IO support (real-time chat works!)
+- ✅ Easy deployment from GitHub
+- ✅ Automatic HTTPS
+- ✅ Auto-restart on crashes
+
+### Step 1: Setup MongoDB Atlas (Free Cloud Database)
 1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas/database)
-2. Create a free account
-3. Create a new cluster (free tier - M0)
-4. Click "Connect" → "Connect your application"
-5. Copy the connection string (looks like: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/`)
-6. Replace `<password>` with your actual password
-7. Add `/mentormentee` at the end of the connection string
+2. Create free account and sign in
+3. Click "Build a Database" → Choose "Free" (M0) tier
+4. Select cloud provider and region (closest to you)
+5. Click "Create Cluster" (takes 3-5 minutes)
+6. Go to "Database Access" → Add New User:
+   - Username: `admin` (or any name)
+   - Password: Create strong password (save it!)
+7. Go to "Network Access" → Add IP Address:
+   - Click "Allow Access from Anywhere" (0.0.0.0/0)
+   - Confirm
+8. Click "Connect" → "Connect your application"
+9. Copy the connection string:
+   ```
+   mongodb+srv://admin:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+10. Replace `<password>` with your actual password
+11. Add database name at the end: `mentormentee`
+    Final: `mongodb+srv://admin:yourpass@cluster0.xxxxx.mongodb.net/mentormentee?retryWrites=true&w=majority`
 
-### Step 2: Deploy to Vercel
-1. Push your code to GitHub
-2. Go to [Vercel](https://vercel.com)
-3. Sign in with GitHub
-4. Click "Add New Project"
-5. Import your repository
-6. Add Environment Variables:
-   - `MONGODB_URI` = Your MongoDB Atlas connection string from Step 1
-   - `JWT_SECRET` = Any random secure string (e.g., `mySecretKey12345`)
-   - `NODE_ENV` = `production`
-7. Click "Deploy"
-8. Wait 2-3 minutes for deployment
-9. Your app will be live at `https://your-app.vercel.app`
+### Step 2: Deploy to Render
+1. Push your code to GitHub (if not already done)
+2. Go to [Render.com](https://render.com) and sign up
+3. Click "New +" → "Web Service"
+4. Connect your GitHub account
+5. Select your repository: `mentor-mentee-application`
+6. Configure:
+   - **Name**: `mentor-mentee-platform` (or any name)
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Select **Free**
+7. Click "Advanced" → Add Environment Variables:
+   - **Key**: `MONGODB_URI` | **Value**: (paste your MongoDB connection string from Step 1)
+   - **Key**: `JWT_SECRET` | **Value**: `mySecretKey123` (any random secure string)
+   - **Key**: `NODE_ENV` | **Value**: `production`
+8. Click "Create Web Service"
+9. Wait 5-10 minutes for deployment
+10. Your app will be live at: `https://mentor-mentee-platform.onrender.com`
 
-**Note:** Real-time chat features won't work on Vercel (Socket.IO not supported). For full features with chat, use Render.com or Railway.app.
+### Step 3: Test Your Deployment
+1. Open your Render URL
+2. Register a new student and mentor
+3. Test login, chat, meetings - everything should work!
 
-### Alternative: Deploy to Render.com (Supports Real-time Chat)
-1. Go to [Render.com](https://render.com)
-2. Create account and connect GitHub
-3. Create new "Web Service"
-4. Add Environment Variables (same as Vercel)
-5. Deploy - full Socket.IO support!
+**Note:** Free tier services may sleep after 15 minutes of inactivity. First request takes 30-60 seconds to wake up.
+
+### Alternative Options
+- [Railway.app](https://railway.app) - Similar to Render, supports Socket.IO
+- [Heroku](https://heroku.com) - Paid plans only now
 
 ## Available Scripts
 - `npm start` - Start the production server
