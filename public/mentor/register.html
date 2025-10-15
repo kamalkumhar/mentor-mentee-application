@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mentor Registration - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/student/login.html" class="nav-link">Student</a></li>
+        <li><a href="/mentor/login.html" class="nav-link">Mentor</a></li>
+        <li><a href="/#about" class="nav-link">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="card" style="max-width: 500px; margin: 3rem auto;">
+      <h2 style="text-align: center;">Mentor Registration</h2>
+      <p style="text-align: center; color: var(--gray);">Create your account to start mentoring</p>
+      
+      <form id="registerForm" style="margin-top: 2rem;">
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="branch" class="form-label">Branch</label>
+          <select id="branch" class="form-control" required>
+            <option value="">Select your branch</option>
+            <option value="Computer">Computer</option>
+            <option value="IT">IT</option>
+            <option value="EXTC">EXTC</option>
+            <option value="Chemical">Chemical</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Civil">Civil</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="specialization" class="form-label">Specialization</label>
+          <input type="text" id="specialization" class="form-control" placeholder="e.g., Computer Science, Business, etc." required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Create a password" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <div style="display: flex; align-items: flex-start;">
+            <input type="checkbox" id="terms" required style="margin-top: 0.5rem; margin-right: 0.5rem;">
+            <label for="terms" style="display: inline;">I agree to the <a href="/terms" style="color: var(--primary);">Terms of Service</a> and <a href="/privacy" style="color: var(--primary);">Privacy Policy</a></label>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+          Create Account
+        </button>
+      </form>
+      
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p>Already have an account? <a href="login.html" style="color: var(--primary);">Sign in</a></p>
+        <p style="margin-top: 1rem;">
+          <a href="/student/register.html" style="color: var(--primary);">Are you a student? Register here</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const username = document.getElementById('username').value;
+      const branch = document.getElementById('branch').value;
+      const specialization = document.getElementById('specialization').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      
+      // Validate branch selection
+      if (!branch) {
+        alert('Please select your branch!');
+        return;
+      }
+      
+      // Show loading spinner
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto;"></div>';
+      submitBtn.disabled = true;
+      
+      // Prepare registration data
+      const registrationData = {
+        name,
+        email,
+        username,
+        password,
+        role: 'mentor',
+        profile: {
+          branch,
+          specialization
+        }
+      };
+      
+      // Make API call to register
+      fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registrationData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        if (data.token) {
+          // Store token in localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userRole', 'mentor');
+          
+          // Show success message
+          alert('Account created successfully! Welcome to MentorMentee.');
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Show error message
+          alert(data.message || 'Registration failed!');
+        }
+      })
+      .catch(error => {
+        // Reset button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        
+        console.error('Error:', error);
+        alert('An error occurred during registration. Please try again.');
+      });
+    });
+  </script>
+</body>
+</html>

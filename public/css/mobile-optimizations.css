@@ -1,0 +1,520 @@
+/* Mobile-First Optimizations for MentorMentee Platform */
+/* This file contains additional mobile-specific improvements */
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Smooth scrolling for better mobile UX */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Better touch interaction */
+@media (hover: none) and (pointer: coarse) {
+  /* This targets touch devices */
+  
+  /* Larger touch targets */
+  .btn, button, a.nav-link, .tab-button {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 20px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .btn:hover, button:hover, a:hover {
+    transform: none;
+  }
+  
+  /* Add active state for touch feedback */
+  .btn:active, button:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+/* Mobile Navigation Hamburger */
+@media (max-width: 768px) {
+  /* Hide navigation links by default on mobile */
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  
+  .nav-links.show {
+    display: flex !important;
+  }
+  
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.5rem 0;
+  }
+  
+  .nav-links li:last-child {
+    border-bottom: none;
+  }
+  
+  .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* Hamburger menu button */
+  .mobile-menu-toggle {
+    display: block !important;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--dark);
+    padding: 0.5rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-menu-toggle:active {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+  
+  .navbar-container {
+    position: relative;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+  
+  .nav-links {
+    display: flex !important;
+  }
+}
+
+/* Mobile Dashboard Optimizations */
+@media (max-width: 768px) {
+  /* Dashboard cards */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .stat-card {
+    padding: 1.25rem 1rem;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+  }
+  
+  .quick-actions .btn {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Resource cards */
+  .resource-grid, .meeting-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Profile sections */
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile Chat Optimizations */
+@media (max-width: 768px) {
+  .chat-layout {
+    flex-direction: column;
+  }
+  
+  .chat-sidebar {
+    width: 100% !important;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #e2e8f0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .chat-main {
+    width: 100% !important;
+    height: calc(100vh - 260px);
+  }
+  
+  .chat-messages {
+    padding: 0.75rem;
+  }
+  
+  .message {
+    max-width: 80%;
+    font-size: 0.9rem;
+  }
+  
+  .chat-input-container {
+    padding: 0.75rem;
+    position: sticky;
+    bottom: 0;
+    background: white;
+  }
+  
+  .chat-input {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 0.75rem;
+  }
+  
+  .user-item {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile Forms */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1rem;
+  }
+  
+  .form-control, .form-select, input, textarea, select {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 0.75rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Mobile Tables */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  
+  table {
+    font-size: 0.85rem;
+    min-width: 600px;
+  }
+  
+  table th, table td {
+    padding: 0.5rem;
+    white-space: nowrap;
+  }
+}
+
+/* Mobile Modals */
+@media (max-width: 768px) {
+  .modal {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    margin: 1rem auto;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header, .modal-footer {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+}
+
+/* Mobile Cards and Grids */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+  
+  /* People page grids */
+  #mentors-grid,
+  #students-grid,
+  #assign-grid,
+  #all-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  /* Stats bar on people page */
+  .stats-bar {
+    flex-direction: column !important;
+  }
+  
+  .stats-bar .stat-card {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+/* Mobile Tabs */
+@media (max-width: 768px) {
+  .tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    flex-wrap: nowrap !important;
+    margin-bottom: 1rem;
+  }
+  
+  .tabs-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  .tab-button {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile Meeting Cards */
+@media (max-width: 768px) {
+  .meeting-card {
+    padding: 1rem;
+  }
+  
+  .meeting-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .meeting-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .meeting-footer .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile Notification Badge */
+@media (max-width: 768px) {
+  .notification-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.35rem;
+    min-width: 18px;
+    height: 18px;
+  }
+}
+
+/* Mobile Progress Report */
+@media (max-width: 768px) {
+  .progress-stats {
+    grid-template-columns: 1fr !important;
+  }
+  
+  canvas {
+    max-height: 220px !important;
+  }
+  
+  .chart-container {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile Resources Page */
+@media (max-width: 768px) {
+  .resource-card {
+    padding: 1rem;
+  }
+  
+  .resource-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .resource-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .resource-actions .btn {
+    width: 100%;
+  }
+  
+  .file-upload-area {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Mobile Landing Page */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  
+  .hero-title {
+    font-size: 1.75rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .hero-buttons .btn {
+    width: 100%;
+  }
+}
+
+/* Improve spacing on mobile */
+@media (max-width: 768px) {
+  section, .section {
+    padding: 1.5rem 0;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  /* Reduce margins on mobile */
+  h1, h2, h3 {
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Fix iOS input zoom issue */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Better focus states for mobile */
+@media (max-width: 768px) {
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Mobile-friendly spacing for buttons */
+@media (max-width: 768px) {
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+}
+
+/* Sticky footer on mobile */
+@media (max-width: 768px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  main {
+    flex: 1;
+  }
+}
+
+/* Loading states for mobile */
+.mobile-loading {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.mobile-loading::after {
+  content: "...";
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60%, 100% { content: "..."; }
+}
+
+/* Empty states on mobile */
+@media (max-width: 768px) {
+  .empty-state {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* PWA-like full screen on mobile browsers */
+@media (max-width: 768px) and (display-mode: standalone) {
+  /* When added to home screen */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  /* Add dark mode styles if needed in future */
+}

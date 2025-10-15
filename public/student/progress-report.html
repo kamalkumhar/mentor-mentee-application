@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Report - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="../css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="../js/mobile-menu.js" defer></script>
+  <style>
+    /* Disable all transitions and animations on stats cards */
+    .dashboard-grid,
+    .dashboard-grid * {
+      transition: none !important;
+      animation: none !important;
+    }
+    
+    .stat-card {
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>📊 Progress Report</h1>
+        <p>Your mentoring journey statistics and insights</p>
+      </div>
+      <button onclick="window.location.href='dashboard.html'" class="btn btn-secondary">
+        ← Back to Dashboard
+      </button>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <div class="dashboard-grid">
+      <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="stat-value" id="totalMeetings">0</div>
+        <div class="stat-label" style="color: rgba(255,255,255,0.9);">Total Completed Meetings</div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+          ✓ Successfully completed sessions
+        </div>
+      </div>
+      
+      <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+        <div class="stat-value" id="totalTime">0h 0m</div>
+        <div class="stat-label" style="color: rgba(255,255,255,0.9);">Total Time Spent</div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+          ⏱️ Time invested in learning
+        </div>
+      </div>
+      
+      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+        <div class="stat-value" id="avgDuration">0 min</div>
+        <div class="stat-label" style="color: rgba(255,255,255,0.9);">Average Meeting Duration</div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+          📏 Average session length
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Stats -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Meeting Statistics</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #22c55e; margin-bottom: 0.5rem;">📅</div>
+          <div style="font-size: 1.5rem; font-weight: 600; color: #22c55e;" id="scheduledCount">0</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Upcoming Meetings</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #ef4444; margin-bottom: 0.5rem;">❌</div>
+          <div style="font-size: 1.5rem; font-weight: 600; color: #ef4444;" id="cancelledCount">0</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Cancelled Meetings</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #3b82f6; margin-bottom: 0.5rem;">✓</div>
+          <div style="font-size: 1.5rem; font-weight: 600; color: #3b82f6;" id="completionRate">0%</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Completion Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Completed Meetings -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Recent Completed Meetings</h3>
+      <div id="recentMeetingsList" style="margin-top: 1rem;">
+        <!-- Meetings will be loaded here -->
+        <div style="text-align: center; padding: 2rem; color: var(--gray);">
+          Loading meetings...
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Progress Chart -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Monthly Meeting Trends</h3>
+      <div id="monthlyChart" style="margin-top: 1rem;">
+        <!-- Chart will be displayed here -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout functionality
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          window.location.href = '/';
+        }
+      });
+
+      // Check if viewing another student's progress (for mentors)
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get('studentId');
+
+      // Load progress report data
+      loadProgressReport(token, studentId);
+    });
+
+    function loadProgressReport(token, studentId = null) {
+      // If studentId is provided, mentor is viewing student's progress
+      let url = '/api/meetings/progress-report';
+      if (studentId) {
+        url += `?studentId=${studentId}`;
+      }
+
+      fetch(url, {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Progress Report:', data);
+        
+        // Update summary stats
+        document.getElementById('totalMeetings').textContent = data.totalCompleted;
+        document.getElementById('totalTime').textContent = `${data.totalHours}h ${data.totalMinutes}m`;
+        document.getElementById('avgDuration').textContent = `${data.averageDuration} min`;
+        
+        // Update additional stats
+        document.getElementById('scheduledCount').textContent = data.scheduledMeetings;
+        document.getElementById('cancelledCount').textContent = data.cancelledMeetings;
+        
+        // Calculate completion rate
+        const totalAll = data.totalCompleted + data.cancelledMeetings;
+        const completionRate = totalAll > 0 ? Math.round((data.totalCompleted / totalAll) * 100) : 0;
+        document.getElementById('completionRate').textContent = `${completionRate}%`;
+        
+        // Display recent meetings
+        displayRecentMeetings(data.recentMeetings);
+        
+        // Display monthly chart
+        displayMonthlyChart(data.meetingsByMonth, data.durationByMonth);
+      })
+      .catch(error => {
+        console.error('Error loading progress report:', error);
+        document.getElementById('recentMeetingsList').innerHTML = 
+          '<div style="text-align: center; padding: 2rem; color: var(--danger);">Error loading progress report</div>';
+      });
+    }
+
+    function displayRecentMeetings(meetings) {
+      const container = document.getElementById('recentMeetingsList');
+      
+      if (meetings.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--gray);">
+            <p style="font-size: 2rem; margin-bottom: 0.5rem;">📭</p>
+            <p>No completed meetings yet</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Complete your first meeting to see it here!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = meetings.map(meeting => {
+        const meetingDate = new Date(meeting.date);
+        const dateStr = meetingDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        const timeStr = meetingDate.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit', 
+          hour12: true 
+        });
+        
+        return `
+          <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h4 style="margin: 0 0 0.5rem 0; color: var(--primary);">${meeting.title}</h4>
+              <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">
+                <strong>Mentor:</strong> ${meeting.mentor.name} | 
+                <strong>Date:</strong> ${dateStr}, ${timeStr}
+              </p>
+              ${meeting.description ? `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">${meeting.description}</p>` : ''}
+            </div>
+            <div style="text-align: center; padding: 0.5rem 1rem; background: #dcfce7; border-radius: 6px;">
+              <div style="font-size: 1.2rem; font-weight: 600; color: #166534;">${meeting.duration} min</div>
+              <div style="font-size: 0.75rem; color: #166534;">Duration</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function displayMonthlyChart(meetingsByMonth, durationByMonth) {
+      const container = document.getElementById('monthlyChart');
+      
+      if (Object.keys(meetingsByMonth).length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--gray);">
+            <p>No data available yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Get last 6 months or all available months
+      const months = Object.keys(meetingsByMonth).reverse().slice(0, 6).reverse();
+      const maxMeetings = Math.max(...months.map(m => meetingsByMonth[m]));
+      
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          ${months.map(month => {
+            const count = meetingsByMonth[month];
+            const duration = durationByMonth[month];
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            const heightPercent = maxMeetings > 0 ? (count / maxMeetings) * 100 : 0;
+            
+            return `
+              <div style="text-align: center;">
+                <div style="height: 150px; display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 0.5rem;">
+                  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 8px; height: ${heightPercent}%; min-height: 50px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-size: 1.5rem; font-weight: 600;">${count}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.9;">meetings</div>
+                  </div>
+                </div>
+                <div style="font-weight: 600; font-size: 0.9rem;">${month}</div>
+                <div style="color: var(--gray); font-size: 0.8rem;">${hours}h ${minutes}m</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="../css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="../js/mobile-menu.js" defer></script>
+  <style>
+    /* Disable all transitions and animations on stats cards */
+    .dashboard-grid,
+    .dashboard-grid * {
+      transition: none !important;
+      animation: none !important;
+    }
+    
+    .stat-card {
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>Student Dashboard</h1>
+        <p>Welcome back, <span id="studentName">Student</span></p>
+      </div>
+      <div id="mentorInfo">
+        <p style="text-align: right;">Your Mentor: <strong id="mentorName">Not assigned</strong></p>
+        <p style="text-align: right; color: var(--success);">● Online</p>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="cgpaValue">0.00</div>
+        <div class="stat-label">Average CGPA</div>
+        <div style="margin-top: 1rem; height: 100px;">
+          <canvas id="cgpaChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="meetingsCount">0</div>
+        <div class="stat-label">Upcoming Meetings</div>
+        <div style="margin-top: 1rem;">
+          <p id="nextMeeting"></p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-value" id="messagesCount">0</div>
+        <div class="stat-label">Unread Messages</div>
+        <div style="margin-top: 1rem;">
+          <p id="lastMessage"></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Branch and Division Info -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Your Information</h3>
+      <div style="display: flex; gap: 2rem; margin-top: 1rem;">
+        <div>
+          <p style="margin: 0.5rem 0;"><strong>Branch:</strong> <span id="branchInfo">Not specified</span></p>
+          <p style="margin: 0.5rem 0;"><strong>Division:</strong> <span id="divisionInfo">Not specified</span></p>
+        </div>
+        <div>
+          <p style="margin: 0.5rem 0;"><strong>Current Year:</strong> <span id="yearInfo">Not specified</span></p>
+          <p style="margin: 0.5rem 0;"><strong>CGPA Category:</strong> <span id="categoryInfo">Not available</span></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Quick Actions</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <button class="btn btn-primary" style="padding: 1.5rem;">
+          <span>Schedule Meeting</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem;">
+          <span>Send Message</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem;">
+          <span>Resources</span>
+        </button>
+        <button class="btn btn-primary" style="padding: 1.5rem;">
+          <span>Progress Report</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Simple chart simulation
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate stats cards
+      const statCards = document.querySelectorAll('.stat-card');
+      statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 200 * index);
+      });
+      
+      // Logout functionality
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          // In a real app, this would destroy the session/token
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          window.location.href = '/';
+        }
+      });
+      
+      // Fetch student data from the server
+      fetch('/api/auth/me', {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      })
+      .then(response => response.json())
+      .then(student => {
+        // Update student name
+        document.getElementById('studentName').textContent = student.name;
+        
+        // Update mentor information
+        if (student.mentor) {
+          document.getElementById('mentorName').textContent = student.mentor.name;
+        } else {
+          document.getElementById('mentorInfo').style.display = 'none';
+        }
+        
+        // Update branch and division info
+        if (student.profile) {
+          document.getElementById('branchInfo').textContent = student.profile.branch || 'Not specified';
+          document.getElementById('divisionInfo').textContent = student.profile.division || 'Not specified';
+          
+          // Update year info
+          const yearMap = {1: '1st Year', 2: '2nd Year', 3: '3rd Year', 4: '4th Year'};
+          document.getElementById('yearInfo').textContent = yearMap[student.profile.currentYear] || 'Not specified';
+          
+          // Calculate and display CGPA category
+          if (student.profile.cgpa) {
+            // Calculate average CGPA using the same logic as in the User model
+            let total = 0;
+            let count = 0;
+            
+            for (let year = 1; year <= student.profile.currentYear; year++) {
+              const yearKey = `year${year}`;
+              // Handle both Map and object formats
+              let yearCGPA;
+              if (student.profile.cgpa instanceof Map) {
+                yearCGPA = student.profile.cgpa.get(yearKey);
+              } else {
+                yearCGPA = student.profile.cgpa[yearKey];
+              }
+              
+              if (yearCGPA) {
+                if (yearCGPA.sem1 !== undefined && yearCGPA.sem1 !== null) {
+                  total += yearCGPA.sem1;
+                  count++;
+                }
+                if (yearCGPA.sem2 !== undefined && yearCGPA.sem2 !== null) {
+                  total += yearCGPA.sem2;
+                  count++;
+                }
+              }
+            }
+            
+            const averageCGPA = count > 0 ? (total / count) : 0;
+            document.getElementById('cgpaValue').textContent = averageCGPA.toFixed(2);
+            
+            // Determine CGPA category
+            let category = 'Low-range';
+            if (averageCGPA >= 8.5) {
+              category = 'Topper';
+            } else if (averageCGPA >= 6.0) {
+              category = 'Mid-range';
+            }
+            document.getElementById('categoryInfo').textContent = category;
+          } else {
+            document.getElementById('cgpaValue').textContent = '0.00';
+            document.getElementById('categoryInfo').textContent = 'Not available';
+          }
+          
+          // Load meetings after getting user data
+          loadUpcomingMeetings(token);
+          // Load unread messages count
+          loadUnreadMessages(token);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching student data:', error);
+      });
+      
+      // Load unread messages count
+      function loadUnreadMessages(token) {
+        fetch('/api/messages/unread-count', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('messagesCount').textContent = data.count;
+          if (data.count > 0) {
+            document.getElementById('lastMessage').innerHTML = `You have <strong>${data.count} unread message${data.count > 1 ? 's' : ''}</strong>`;
+          } else {
+            document.getElementById('lastMessage').innerHTML = 'No unread messages';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading unread messages:', error);
+          document.getElementById('lastMessage').innerHTML = 'Error loading messages';
+        });
+      }
+      
+      // Load upcoming meetings
+      function loadUpcomingMeetings(token) {
+        fetch('/api/meetings/upcoming', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(meetings => {
+          // Update meetings count
+          document.getElementById('meetingsCount').textContent = meetings.length;
+          
+          // Update next meeting
+          if (meetings.length > 0) {
+            const nextMeeting = meetings[0];
+            const meetingDate = new Date(nextMeeting.date);
+            const timeStr = formatDateTime(meetingDate);
+            document.getElementById('nextMeeting').innerHTML = `Next meeting: <strong>${timeStr}</strong>`;
+          } else {
+            document.getElementById('nextMeeting').innerHTML = 'No upcoming meetings';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading meetings:', error);
+          document.getElementById('nextMeeting').innerHTML = 'Error loading meetings';
+        });
+      }
+      
+      // Format date time
+      function formatDateTime(date) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const meetingDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        
+        if (meetingDay.getTime() === today.getTime()) {
+          return `Today, ${timeStr}`;
+        } else if (meetingDay.getTime() === tomorrow.getTime()) {
+          return `Tomorrow, ${timeStr}`;
+        } else {
+          return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + timeStr;
+        }
+      }
+      
+      // Quick Actions click handlers
+      const quickActionBtns = document.querySelectorAll('.card .btn');
+      quickActionBtns[0].addEventListener('click', () => {
+        window.location.href = 'meetings.html';
+      });
+      quickActionBtns[1].addEventListener('click', () => {
+        window.location.href = 'chat.html';
+      });
+      quickActionBtns[2].addEventListener('click', () => {
+        window.location.href = 'resources.html';
+      });
+      quickActionBtns[3].addEventListener('click', () => {
+        window.location.href = 'progress-report.html';
+      });
+    });
+  </script>
+</body>
+</html>

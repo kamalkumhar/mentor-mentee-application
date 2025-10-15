@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - MentorMentee</title>
+  <link rel="stylesheet" href="css/modern-styles.css">
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  <script src="js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="/student/login.html" class="nav-link">Student</a></li>
+        <li><a href="/mentor/login.html" class="nav-link">Mentor</a></li>
+        <li><a href="/#about" class="nav-link">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="card" style="max-width: 500px; margin: 4rem auto; text-align: center;">
+      <h1>Create an Account</h1>
+      <p>Join our community of learners and mentors</p>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+        <a href="/student/register.html" class="btn btn-primary btn-lg" style="flex: 1; min-width: 250px; padding: 1.5rem 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">👨‍🎓</div>
+          <h3 style="margin: 0; font-size: 1.5rem;">I'm a Student</h3>
+          <p style="margin: 0.5rem 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">Looking for guidance and mentorship</p>
+        </a>
+        <a href="/mentor/register.html" class="btn btn-primary btn-lg" style="flex: 1; min-width: 250px; padding: 1.5rem 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">👩‍🏫</div>
+          <h3 style="margin: 0; font-size: 1.5rem;">I'm a Teacher</h3>
+          <p style="margin: 0.5rem 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">Ready to share knowledge and guide others</p>
+        </a>
+      </div>
+      
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+        <p>Already have an account? <a href="/index.html" style="color: var(--primary);">Sign in</a></p>
+      </div>
+    </div>
+    
+    <!-- Features Section -->
+    <section style="margin-top: 4rem;">
+      <h2 style="text-align: center; margin-bottom: 3rem;">Why Join MentorMentee?</h2>
+      
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🤝</div>
+          <h3>Connect</h3>
+          <p>Find the perfect mentor or mentee based on your interests and goals</p>
+        </div>
+        
+        <div class="stat-card">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+          <h3>Communicate</h3>
+          <p>Real-time messaging with video call capabilities</p>
+        </div>
+        
+        <div class="stat-card">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+          <h3>Schedule</h3>
+          <p>Easy meeting scheduling with calendar integration</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Simple animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.stat-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 300 * index);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!-- Unified Navigation Component -->
+<nav class="navbar">
+  <div class="container navbar-container">
+    <a href="/" class="navbar-brand">MentorMentee</a>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+      <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+      <li><a href="chat.html" class="nav-link">Messages</a></li>
+      <li style="position: relative;">
+        <a href="notifications.html" class="nav-link">
+          Notifications
+          <span class="notification-badge" id="notificationCount">0</span>
+        </a>
+      </li>
+      <li><a href="profile.html" class="nav-link">Profile</a></li>
+      <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+<script>
+  // Update notification count dynamically
+  document.addEventListener('DOMContentLoaded', function() {
+    // In a real app, this would come from an API
+    const notificationCount = document.getElementById('notificationCount');
+    if (notificationCount) {
+      // Simulate fetching notification count
+      setTimeout(() => {
+        const count = Math.floor(Math.random() * 5) + 1;
+        notificationCount.textContent = count;
+        if (count > 0) {
+          notificationCount.style.display = 'flex';
+        }
+      }, 1000);
+    }
+    
+    // Logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          // In a real app, this would destroy the session/token
+          window.location.href = '/';
+        }
+      });
+    }
+  });
+</script>

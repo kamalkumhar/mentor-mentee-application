@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources - MentorMentee</title>
+  <link rel="stylesheet" href="../css/modern-styles.css">
+  <link rel="stylesheet" href="../css/mobile-optimizations.css">
+  <script src="../js/notification-badge.js"></script>
+  <script src="../js/mobile-menu.js" defer></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="/" class="navbar-brand">MentorMentee</a>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="meetings.html" class="nav-link">Meetings</a></li>
+        <li><a href="chat.html" class="nav-link">Messages</a></li>
+        <li style="position: relative;">
+          <a href="notifications.html" class="nav-link">
+            Notifications
+            <span class="notification-badge">0</span>
+          </a>
+        </li>
+        <li><a href="profile.html" class="nav-link">Profile</a></li>
+        <li><a href="../people.html" class="nav-link">People</a></li>
+        <li><a href="#" id="logoutBtn" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+      <div>
+        <h1>📚 Learning Resources</h1>
+        <p>Study materials and resources shared by your mentor</p>
+      </div>
+      <button onclick="window.location.href='dashboard.html'" class="btn btn-secondary">
+        ← Back to Dashboard
+      </button>
+    </div>
+
+    <!-- Resources List -->
+    <div class="card">
+      <h3>Available Resources</h3>
+      <div id="resourcesList" style="margin-top: 1rem;">
+        <div style="text-align: center; padding: 2rem; color: var(--gray);">
+          Loading resources...
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card" style="margin-top: 2rem;">
+      <h3>Resource Statistics</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #4361ee; margin-bottom: 0.5rem;">📚</div>
+          <div style="font-size: 1.5rem; font-weight: 600; color: #4361ee;" id="totalResources">0</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Total Resources</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;">📥</div>
+          <div style="font-size: 1.5rem; font-weight: 600; color: #10b981;" id="totalDownloads">0</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Downloads Available</div>
+        </div>
+        
+        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+          <div style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.5rem;">👨‍🏫</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: #f59e0b;" id="mentorName">-</div>
+          <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">Your Mentor</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Logout functionality
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          window.location.href = '/';
+        }
+      });
+
+      // Load user info and resources
+      loadUserInfo(token);
+      loadResources(token);
+    });
+
+    function loadUserInfo(token) {
+      fetch('/api/auth/me', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(user => {
+        if (user.mentor) {
+          document.getElementById('mentorName').textContent = user.mentor.name;
+        } else {
+          document.getElementById('mentorName').textContent = 'Not assigned';
+        }
+      })
+      .catch(error => {
+        console.error('Error loading user info:', error);
+      });
+    }
+
+    function loadResources(token) {
+      fetch('/api/resources', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(resources => {
+        displayResources(resources);
+        updateStats(resources);
+      })
+      .catch(error => {
+        console.error('Error loading resources:', error);
+        document.getElementById('resourcesList').innerHTML = 
+          '<div style="text-align: center; padding: 2rem; color: var(--danger);">Error loading resources</div>';
+      });
+    }
+
+    function displayResources(resources) {
+      const container = document.getElementById('resourcesList');
+
+      if (resources.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: var(--gray);">
+            <p style="font-size: 2rem; margin-bottom: 0.5rem;">📭</p>
+            <p>No resources available yet</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Your mentor hasn't uploaded any resources yet. Check back later!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = resources.map(resource => {
+        const uploadDate = new Date(resource.uploadedAt);
+        const dateStr = uploadDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        const fileSize = formatFileSize(resource.fileSize);
+        const fileIcon = getFileIcon(resource.fileType);
+
+        return `
+          <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.borderColor='#4361ee'; this.style.boxShadow='0 4px 6px rgba(67, 97, 238, 0.1)'" onmouseout="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+            <div style="display: flex; align-items: center; flex: 1;">
+              <div style="font-size: 2.5rem; margin-right: 1rem;">${fileIcon}</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.5rem 0; color: var(--primary);">${resource.title}</h4>
+                <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">
+                  <strong>File:</strong> ${resource.originalName} (${fileSize})
+                </p>
+                ${resource.description ? `<p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">${resource.description}</p>` : ''}
+                <p style="margin: 0.5rem 0 0 0; color: var(--gray); font-size: 0.85rem;">
+                  📤 Uploaded by ${resource.uploadedBy.name} on ${dateStr}
+                </p>
+              </div>
+            </div>
+            <div>
+              <button onclick="downloadResource('${resource._id}', '${resource.originalName}')" class="btn btn-primary">
+                📥 Download
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateStats(resources) {
+      document.getElementById('totalResources').textContent = resources.length;
+      document.getElementById('totalDownloads').textContent = resources.length;
+    }
+
+    function getFileIcon(fileType) {
+      if (fileType.includes('pdf')) return '📄';
+      if (fileType.includes('word') || fileType.includes('doc')) return '📝';
+      if (fileType.includes('powerpoint') || fileType.includes('presentation')) return '📊';
+      if (fileType.includes('excel') || fileType.includes('sheet')) return '📈';
+      if (fileType.includes('image')) return '🖼️';
+      if (fileType.includes('zip') || fileType.includes('rar')) return '📦';
+      return '📎';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function downloadResource(resourceId, filename) {
+      const token = localStorage.getItem('token');
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = `/api/resources/download/${resourceId}`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show feedback
+      alert('Download started!');
+    }
+  </script>
+</body>
+</html>
