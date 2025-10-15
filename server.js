@@ -23,16 +23,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mentormentee', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// MongoDB connection with proper SSL configuration
+const mongoOptions = {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+};
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mentormentee', mongoOptions)
+  .then(() => {
+    console.log('Connected to MongoDB database');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    // Don't exit process, let Render retry
+  });
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB database');
+db.on('error', (err) => {
+  console.error('MongoDB runtime error:', err);
+});
+db.on('disconnected', () => {
+  console.log('MongoDB disconnected. Attempting to reconnect...');
+});
+db.on('reconnected', () => {
+  console.log('MongoDB reconnected');
 });
 
 // Set Socket.io instance for notifications

@@ -118,20 +118,29 @@ Fully responsive design for mobile devices
 7. Go to "Network Access" → Add IP Address:
    - Click "Allow Access from Anywhere" (0.0.0.0/0)
    - Confirm
-8. Click "Connect" → "Connect your application"
-9. Copy the connection string:
-   ```
-   mongodb+srv://admin:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
-   ```
-10. Replace `<password>` with your actual password
-11. Add database name at the end: `mentormentee`
-    Final: `mongodb+srv://admin:yourpass@cluster0.xxxxx.mongodb.net/mentormentee?retryWrites=true&w=majority`
+8. Go back to "Database" → Click "Connect" button
+9. Choose "Drivers" → Select "Node.js" and version "4.1 or later"
+10. Copy the connection string (it will look like):
+    ```
+    mongodb+srv://admin:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+    ```
+11. **IMPORTANT**: Modify the connection string:
+    - Replace `<password>` with your actual password (NO angle brackets!)
+    - Add `/mentormentee` before the `?` 
+    - Final correct format:
+    ```
+    mongodb+srv://admin:YourPassword123@cluster0.xxxxx.mongodb.net/mentormentee?retryWrites=true&w=majority
+    ```
+    **Example**: If password is `Pass123`, cluster is `cluster0.abc12.mongodb.net`:
+    ```
+    mongodb+srv://admin:Pass123@cluster0.abc12.mongodb.net/mentormentee?retryWrites=true&w=majority
+    ```
 
 ### Step 2: Deploy to Render
-1. Push your code to GitHub (if not already done)
-2. Go to [Render.com](https://render.com) and sign up
+1. Make sure your code is pushed to GitHub
+2. Go to [Render.com](https://render.com) and sign up with GitHub
 3. Click "New +" → "Web Service"
-4. Connect your GitHub account
+4. Connect your GitHub account (if not connected)
 5. Select your repository: `mentor-mentee-application`
 6. Configure:
    - **Name**: `mentor-mentee-platform` (or any name)
@@ -153,6 +162,30 @@ Fully responsive design for mobile devices
 3. Test login, chat, meetings - everything should work!
 
 **Note:** Free tier services may sleep after 15 minutes of inactivity. First request takes 30-60 seconds to wake up.
+
+### Common Issues & Solutions
+
+**Error: SSL/TLS Alert Internal Error (Error 80)**
+- ✅ **Fixed in latest code!**
+- Make sure your MongoDB connection string is correct
+- Password should NOT have special characters like `@`, `#`, `%` (or URL encode them)
+- Example bad password: `Pass@123` (use `Pass123` instead)
+- Connection string format must be: `mongodb+srv://user:pass@cluster.mongodb.net/mentormentee?retryWrites=true&w=majority`
+
+**Error: Could not connect to MongoDB**
+- Check if IP address `0.0.0.0/0` is whitelisted in MongoDB Atlas
+- Verify username and password are correct
+- Make sure database name `mentormentee` is added in connection string
+
+**Error: Application Error / Crash**
+- Check Render logs: Dashboard → Your Service → Logs
+- Verify all environment variables are set correctly
+- Make sure `NODE_ENV=production` is set
+
+**Chat not working**
+- Socket.IO is fully supported on Render
+- Clear browser cache and try again
+- Check browser console for connection errors
 
 ### Alternative Options
 - [Railway.app](https://railway.app) - Similar to Render, supports Socket.IO
