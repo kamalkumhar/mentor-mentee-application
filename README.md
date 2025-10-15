@@ -24,25 +24,96 @@ The Mentor-Mentee Platform is a modern web application designed to facilitate co
 - **Real-time Communication**: Socket.IO
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 
-## Setup Instructions
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Make sure MongoDB is running on your system
-4. Start the server: `npm start`
-5. Access the application at http://localhost:3000
+## 📋 Prerequisites
+Before running this project, make sure you have:
+- **Node.js** (v14 or higher) - [Download here](https://nodejs.org/)
+- **MongoDB** (v4.4 or higher) - [Download here](https://www.mongodb.com/try/download/community)
+- **Git** - [Download here](https://git-scm.com/)
 
-## Important Notes
-⚠️ **No Dummy Data**: This application does NOT auto-populate with dummy users. All users must register through the registration forms.
+## 🚀 Local Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/kamalkumhar/mentormentee.git
+cd mentormentee
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+Create a `.env` file in the root directory by copying the example:
+```bash
+# On Windows (PowerShell)
+Copy-Item .env.example .env
+
+# On Mac/Linux
+cp .env.example .env
+```
+
+Edit the `.env` file and update the values:
+```env
+MONGODB_URI=mongodb://localhost:27017/mentormentee
+JWT_SECRET=your_super_secret_jwt_key_here_change_this
+PORT=3000
+NODE_ENV=development
+```
+
+⚠️ **Important**: Change `JWT_SECRET` to a random secure string!
+
+### 4. Start MongoDB
+Make sure MongoDB is running on your system:
+```bash
+# On Windows (if MongoDB is installed as a service)
+net start MongoDB
+
+# On Mac/Linux
+mongod
+```
+
+### 5. Start the Server
+```bash
+npm start
+```
+
+### 6. Access the Application
+Open your browser and go to: **http://localhost:3000**
+
+## 🎯 Important Notes
+
+### No Dummy Data
+⚠️ This application does NOT auto-populate with dummy users. All users must register through the registration forms.
 
 - The database starts empty on first run
 - Users must register manually via Student/Mentor registration pages
 - The `populate-database.js` script is ONLY for testing purposes and should be run manually if needed
 - No automatic dummy data is created when the server starts
 
-## Available Scripts
+### Mobile Optimization
+✅ Fully responsive design for mobile devices
+- Hamburger menu navigation
+- Touch-friendly interface
+- Optimized layouts for screens 480px, 768px, and 1024px+
+
+### Deployment
+⚠️ **Cannot be deployed on GitHub Pages** because:
+- Requires Node.js backend server
+- Needs MongoDB database
+- Uses Socket.IO for real-time features
+
+**Recommended Hosting Options:**
+- [Render.com](https://render.com) - Free tier available
+- [Railway.app](https://railway.app) - Free tier available
+- [Heroku](https://heroku.com) - Paid plans
+- Use [MongoDB Atlas](https://www.mongodb.com/atlas) for cloud database
+
+## 📦 Available Scripts
 - `npm start` - Start the production server
-- `npm run dev` - Start the development server with nodemon
-- `node scripts/populate-database.js` - **[TESTING ONLY]** Manually populate database with sample users for testing
+- `npm run dev` - Start the development server with nodemon (if nodemon is installed)
+- `npm run populate-db` - **[TESTING ONLY]** Manually populate database with sample users for testing
+- `node scripts/clear-database.js` - Clear all data from the database
 
 ## Access Points
 - **Home Page**: http://localhost:3000/
