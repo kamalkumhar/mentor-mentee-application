@@ -97,17 +97,39 @@ Fully responsive design for mobile devices
 - Touch-friendly interface
 - Optimized layouts for screens 480px, 768px, and 1024px+
 
-### Deployment
-**Cannot be deployed on GitHub Pages** because:
-- Requires Node.js backend server
-- Needs MongoDB database
-- Uses Socket.IO for real-time features
+## Deploy to Vercel
 
-**Recommended Hosting Options:**
-- [Render.com](https://render.com) - Free tier available
-- [Railway.app](https://railway.app) - Free tier available
-- [Heroku](https://heroku.com) - Paid plans
-- Use [MongoDB Atlas](https://www.mongodb.com/atlas) for cloud database
+### Step 1: Setup MongoDB Atlas (Free Database)
+1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+2. Create a free account
+3. Create a new cluster (free tier - M0)
+4. Click "Connect" → "Connect your application"
+5. Copy the connection string (looks like: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/`)
+6. Replace `<password>` with your actual password
+7. Add `/mentormentee` at the end of the connection string
+
+### Step 2: Deploy to Vercel
+1. Push your code to GitHub
+2. Go to [Vercel](https://vercel.com)
+3. Sign in with GitHub
+4. Click "Add New Project"
+5. Import your repository
+6. Add Environment Variables:
+   - `MONGODB_URI` = Your MongoDB Atlas connection string from Step 1
+   - `JWT_SECRET` = Any random secure string (e.g., `mySecretKey12345`)
+   - `NODE_ENV` = `production`
+7. Click "Deploy"
+8. Wait 2-3 minutes for deployment
+9. Your app will be live at `https://your-app.vercel.app`
+
+**Note:** Real-time chat features won't work on Vercel (Socket.IO not supported). For full features with chat, use Render.com or Railway.app.
+
+### Alternative: Deploy to Render.com (Supports Real-time Chat)
+1. Go to [Render.com](https://render.com)
+2. Create account and connect GitHub
+3. Create new "Web Service"
+4. Add Environment Variables (same as Vercel)
+5. Deploy - full Socket.IO support!
 
 ## Available Scripts
 - `npm start` - Start the production server
