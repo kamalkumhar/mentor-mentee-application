@@ -31,11 +31,18 @@ The Mentor-Mentee Platform is a modern web application designed to facilitate co
 4. Start the server: `npm start`
 5. Access the application at http://localhost:3000
 
+## Important Notes
+⚠️ **No Dummy Data**: This application does NOT auto-populate with dummy users. All users must register through the registration forms.
+
+- The database starts empty on first run
+- Users must register manually via Student/Mentor registration pages
+- The `populate-database.js` script is ONLY for testing purposes and should be run manually if needed
+- No automatic dummy data is created when the server starts
+
 ## Available Scripts
 - `npm start` - Start the production server
 - `npm run dev` - Start the development server with nodemon
-- `npm run populate-db` - Populate the database with sample data
-- `npm run both` - Run both backend and frontend servers (if configured)
+- `node scripts/populate-database.js` - **[TESTING ONLY]** Manually populate database with sample users for testing
 
 ## Access Points
 - **Home Page**: http://localhost:3000/
